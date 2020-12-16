@@ -1,0 +1,179 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+header {
+  background-color: #464f77;
+  position: fixed;
+  width: 336px;
+  height: 100%;
+  top: 0;
+  left: 0;
+  padding-left: 50px;
+  padding-top: 75px;
+}
+
+
+main {
+  position: relative;
+  margin-left: 336px;
+  margin-right: 95px;
+  padding-left: 20px;
+  padding-top: 15px;
+  max-width: 744px;
+  min-width: 428px;
+}
+
+.show {
+  display: block;
+}
+
+.hide {
+  display: none;
+}
+
+#all_todos,
+#completed_todos {
+  color: white;
+  font-size: 24px;
+}
+
+header ul {
+  list-style: none;
+  padding: 0;
+  color: white;
+}
+
+
+#main_count, 
+#main_list_container h1 {
+  display: inline-block;
+}
+
+#main_count,
+#all_todos span,
+#completed_todos span,
+header .todo_count {
+  margin-left: 20px;
+  background-color:#6b7292;
+  border-radius: 50%;
+  padding: 2px 5px;
+  font-size: 12px;
+  vertical-align: middle;
+  color: white;
+}
+
+#all_todos span,
+#completed_todos span {
+  margin-left: 50px;
+}
+
+header li p,
+header li div {
+  display: inline-block;
+}
+
+header li p {
+  width: 150px;
+}
+
+#completed_todos {
+  margin-top: 100px;
+}
+
+#new_todo_container {
+  margin-bottom: 20px;
+}
+
+#main_list_container table {
+  width: 500px;
+}
+
+#main_list_container td {
+  padding: 20px;
+  border-top: 1px solid gray;
+}
+
+#main_list_container td:first-child {
+  width: 80%;
+}
+
+#main_list_container td:first-child:hover {
+  background-color: lightblue;
+}
+
+#main_list_container label:hover {
+  color: blue;
+}
+
+#main_list_container td:nth-child(2) {
+  text-align: center;
+}
+
+#main_list_container td:nth-child(2):hover {
+  background-color: pink;
+}
+
+.completed_item td label {
+  text-decoration: line-through;
+}
+
+.main_list_highlight {
+  background-color: lightblue;
+} 
+
+.trash_bin_highlight {
+  background-color: pink;
+}
+
+#modal_container {
+  background-color: rgba(0, 0, 0, 0.4);
+  position: fixed;
+  z-index: 5;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
+#modal {
+  background-color: white;
+  position: absolute;
+  width: 400px;
+  height: 250px;
+  left: 50%;
+  top: 150px;
+  margin-left: -200px;
+}
+
+#modal ul {
+  list-style: none;
+  padding: 0;
+}
+
+#modal li {
+  margin-bottom: 20px;
+}
+
+#modal li label {
+  display: inline-block;
+  width: 100px;
+}
+
+#date_select {
+  display: inline-block;
+}
+
+#modal fieldset {
+  border: none;
+}
+
+#form_actions {
+  display: block;
+  text-align: center;
+}

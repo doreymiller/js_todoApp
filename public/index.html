@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.6/handlebars.js" integrity="sha512-MQkEjxbZvzs4TX8ES4/tTIyaYdtDlJzVocnPo0GoysTR0jCmNg0P2is7uqpCoWxmoS9X84CDVzuWgZD/R/Q2oQ==" crossorigin="anonymous"></script>
+  <script src="javascripts/app.js"></script>
+  <link rel="stylesheet" href="stylesheets/style.css" />
+</head>
+<body>
+  <header>
+    
+  </header>
+  <main>
+    <div id="main_list_container">
+
+    </div>
+    <div id="modal_container" class="hide">
+      <div id="modal">
+        <form>
+          <fieldset>
+            <ul>
+              <li>
+                <label for="title" >Title</label>
+                <input type="text" id="title" name="title" required/>
+              </li>
+              <li>
+                <label for="due_date">Due Date</label>
+                <div id="date_select">
+                  <select id="day" name="day">
+                    <option value="">Day</option>
+                    <option value="01">1</option>
+                    <option value="02">2</option>
+                    <option value="03">3</option>
+                    <option value="04">4</option>
+                    <option value="05">5</option>
+                    <option value="06">6</option>
+                    <option value="07">7</option>
+                    <option value="08">8</option>
+                    <option value="09">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                    <option value="13">13</option>
+                    <option value="14">14</option>
+                    <option value="15">15</option>
+                    <option value="16">16</option>
+                    <option value="17">17</option>
+                    <option value="18">18</option>
+                    <option value="19">19</option>
+                    <option value="20">20</option>
+                    <option value="21">21</option>
+                    <option value="22">22</option>
+                    <option value="23">23</option>
+                    <option value="24">24</option>
+                    <option value="25">25</option>
+                    <option value="26">26</option>
+                    <option value="27">27</option>
+                    <option value="28">28</option>
+                    <option value="29">29</option>
+                    <option value="30">30</option>
+                    <option value="31">31</option>
+                  </select>
+                  /
+                  <select id="month" name="month">
+                    <option value="">Month</option>
+                    <option value="01">1</option>
+                    <option value="02">2</option>
+                    <option value="03">3</option>
+                    <option value="04">4</option>
+                    <option value="05">5</option>
+                    <option value="06">6</option>
+                    <option value="07">7</option>
+                    <option value="08">8</option>
+                    <option value="01">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                  </select>
+                  /
+                  <select id="year" name="year">
+                    <option value="">Year</option>
+                    <option value="2020">2020</option>
+                    <option value="2021">2021</option>
+                    <option value="2022">2022</option>
+                    <option value="2023">2023</option>
+                  </select>
+                </div>
+              </li>
+              <li>
+                <label for="description">Description</label>
+                <textarea id="description" placeholder="description"></textarea>
+              </li>
+            </ul>
+          </fieldset>
+          <div id="form_actions">
+            <button id="save_button">Save</button>
+            <button id="complete_button">Mark As Complete</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+  <script id="todo_list_template" type="text/x-handlebars-template">
+    <h1>{{title}}<span id="main_count">{{todos.length}}</span></h1>
+    <div id="new_todo_container">
+      <a href="#">+ Add new todo</a>
+    </div>
+    <table>
+      <tbody>
+        {{#each todos}}
+          {{#if completed}}
+          <tr class="completed_item">
+          {{else}}
+          <tr>
+          {{/if}}
+            <td id="item_{{id}}" data-id={{id}}>
+              {{#if completed}}
+              <input type="checkbox" id="check_{{id}}" name="check_{{id}}" checked/>
+              {{else}}
+              <input type="checkbox" id="check_{{id}}" name="check_{{id}}" />
+              {{/if}}
+              <label for="check_{{id}}">{{listTitle}}</label>
+            </td>
+            <td id="delete_{{id}}" data-id="{{id}}">
+              <img src="images/trash.png" alt="Delete">
+            </td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </script>
+  <script id="nav_template" type="text/x-handlebars-template">
+
+    <h1 id="all_todos">All Todos<span class="todo_count">{{total}}</span></h1>
+
+    <nav>
+      <ul class="active_items">
+        {{#each activeLists}}
+        <li id="active_list_{{idx}}" data-id="{{idx}}">
+          <p>{{title}}</p>
+          <div class="todo_count">{{listLength}}</div>
+        </li>
+        {{/each}}
+      </ul>
+    </nav>
+      
+    <h1 id="completed_todos">Completed<span class="todo_count">{{completedTotal}}</span></h1>
+
+    <ul class="completed_items">
+      {{#each completedLists}}
+        <li id="completed_list_{{idx}}" data-id="{{idx}}">
+          <p>{{title}}</p>
+          <div class="todo_count">{{listLength}}</div>
+        </li>
+      {{/each}}
+    </ul>
+
+  </script>
+</body>
+</html>
