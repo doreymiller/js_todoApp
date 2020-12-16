@@ -14,10 +14,7 @@ header {
   height: 100%;
   top: 0;
   left: 0;
-  padding-left: 50px;
-  padding-top: 75px;
 }
-
 
 main {
   position: relative;
@@ -40,7 +37,10 @@ main {
 #all_todos,
 #completed_todos {
   color: white;
-  font-size: 24px;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 10px 50px;
+  margin-top: 75px;
 }
 
 header ul {
@@ -49,6 +49,15 @@ header ul {
   color: white;
 }
 
+.selected {
+  cursor: none;
+  background-color: #148fd5; 
+}
+
+header li {
+  margin: 0;
+  cursor: pointer;
+}
 
 #main_count, 
 #main_list_container h1 {
@@ -68,9 +77,12 @@ header .todo_count {
   color: white;
 }
 
-#all_todos span,
+#all_todos span {
+  margin-left: 85px;
+}
+
 #completed_todos span {
-  margin-left: 50px;
+  margin-left: 74px;
 }
 
 header li p,
@@ -80,6 +92,7 @@ header li div {
 
 header li p {
   width: 150px;
+  margin-left: 50px;
 }
 
 #completed_todos {

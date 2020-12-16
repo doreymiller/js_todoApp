@@ -6,11 +6,10 @@ const App = {
       .then(response => response.json())
       .then(data => TodoManager.init(data))
       .then(() => NavManager.update())
-      .then(() => MainManager.showAllTodos());
+      .then(() => MainManager.update());
   },
 
   updateUI() {
-    // console.log("updateUI");
     MainManager.update();
     NavManager.update();
   },
@@ -28,19 +27,28 @@ const NavManager = {
     let allTodos = TodoManager.getFlattenedList();
     let todoLists = TodoManager.getAllTodos();
 
-    let activeLists = todoLists.map((list, idx) => {
-      return { title: list.getTitle(), listLength: list.getActive().length, idx};
-    }).filter(obj => obj.listLength > 0);
+    let processList = function(selectFunc) {
+      return todoLists.map((list, idx) => {
+        return { title: list.getTitle(), listLength: selectFunc.call(list).length, idx};
+      }).filter(obj => obj.listLength > 0);
+    };
 
-    let completedLists = todoLists.map((list, idx) => {
-      return { title: list.getTitle(), listLength: list.getCompleted().length, idx};
-    }).filter(obj => obj.listLength > 0);
-
+    let activeLists = processList(TodoList.getActive);
+    let completedLists = processList(TodoList.getCompleted);
+    
     let total = allTodos.length;
     let completedTotal = allTodos.filter(todo => todo.getCompleted()).length;
     let navObj = { total, activeLists, completedLists, completedTotal };
     
     this.renderNav(navObj);
+
+    document.querySelector(`#${this.selectedNav}`).classList.add('selected');
+  },
+
+  selectAllTodos() {
+    this.setNavSelectGroup(this.ACTIVE_STATE);
+    this.setNavSelectById("all_todos");
+    MainManager.setShowAll(true);
   },
 
   renderNav(navData) {
@@ -48,35 +56,33 @@ const NavManager = {
     this.container.innerHTML = html;
   },
 
-  getNavSelectGroup() {
-    return this.navSelectGroup;
-  },
+  getNavSelectGroup() { return this.navSelectGroup },
+  setNavSelectGroup(listGroup) { this.navSelectGroup = listGroup },
+  setNavSelectById(navElementId) { this.selectedNav = navElementId },
 
-  setNavSelectGroup(listGroup) {
-    this.navSelectGroup = listGroup;
+  selectGroup(listGroup, navElementId) {
+    MainManager.setShowAll(true);
+    this.setNavSelectGroup(listGroup);
+    this.setNavSelectById(navElementId);
   },
 
   handleNavEvent(e) {
     e.preventDefault();
-    console.log("handleNavEvent");
 
     if (e.target === document.querySelector("#all_todos")) {
-      MainManager.setShowAll(true);
-      this.navSelectGroup = "active";
+      this.selectGroup(this.ACTIVE_STATE, e.target.id);
     } else if (e.target === document.querySelector("#completed_todos")) {
-      MainManager.setShowAll(true);
-      this.navSelectGroup = "completed";
+      this.selectGroup(this.COMPLETED_STATE, e.target.id);
     } else {
       let targetLi = e.target.closest("li");
-      let id = targetLi.getAttribute("id");
       let listIdx = targetLi.dataset["id"];
   
-      targetLi.classList.add("selected");
+      this.setNavSelectById(targetLi.id);
   
-      if (/active_list_*/.test(id)) {
-        this.navSelectGroup = "active";
-      } else if (/completed_list_*/.test(id)) {
-        this.navSelectGroup = "completed";
+      if (/active_list_*/.test(targetLi.id)) {
+        this.navSelectGroup = this.ACTIVE_STATE;
+      } else if (/completed_list_*/.test(targetLi.id)) {
+        this.navSelectGroup = this.COMPLETED_STATE;
       }
 
       MainManager.setShowAll(false);
@@ -91,9 +97,11 @@ const NavManager = {
   },
 
   init() {
+    this.ACTIVE_STATE = "active";
+    this.COMPLETED_STATE = "completed";
     this.container = document.querySelector("header");
     this.navTemplate = Handlebars.compile(document.querySelector("#nav_template").innerHTML);
-    this.navSelectGroup = "active";
+    this.selectAllTodos();
     this.bind();
   }
 };
@@ -104,19 +112,18 @@ const MainManager = {
     ModalManager.show();
   },
 
-  setShowAll(showAll) {
-    this.showAll = showAll;
-  },
+  setShowAll(showAll) { this.showAll = showAll },
 
   showAllTodos() {
-    // console.log("showAllTodos");
     let todoLists = TodoManager.getAllTodos();
     let activeTodos = [];
     let completedTodos = [];
-    let listTitle = NavManager.getNavSelectGroup() === "active" ? "All Todos" : "Completed";
+    let listTitle = NavManager.getNavSelectGroup() === NavManager.ACTIVE_STATE 
+                    ? "All Todos"
+                    : "Completed";
 
     todoLists.forEach(todoList => {
-      if (NavManager.getNavSelectGroup() === "active") {
+      if (NavManager.getNavSelectGroup() === NavManager.ACTIVE_STATE) {
         activeTodos.push(todoList.getActive());
       }
       completedTodos.push(todoList.getCompleted());
@@ -131,9 +138,9 @@ const MainManager = {
     let listGroup = NavManager.getNavSelectGroup();
     let filteredList;
 
-    if (listGroup === "active") {
+    if (listGroup === NavManager.ACTIVE_STATE) {
       filteredList = todoList.getActive();
-    } else if (listGroup === "completed") {
+    } else if (listGroup === NavManager.COMPLETED_STATE) {
       filteredList = todoList.getCompleted();
     }
 
@@ -147,30 +154,23 @@ const MainManager = {
   },
 
   update() {
-    console.log("update");
-    if (this.showAll) {
-      this.showAllTodos();
-    } else {
-      this.showCurrentList();
-    }
+    this.showAll ? this.showAllTodos() : this.showCurrentList();
   },
 
   handleListEvent(e) {
-    // console.log("handleListEvent");
     e.preventDefault();
 
     if (e.target === this.newTodo) {
       this.showModal(e);
     } else {
       let td = e.target.closest("td");
-      let id = td.getAttribute("id");
       let dataId = Number(td.dataset.id);
   
-      if (/delete_*/.test(id)) {
+      if (/delete_*/.test(td.id)) {
         TodoManager.removeTodo(dataId);
       } else if (e.target.tagName === "LABEL") {
         ModalManager.show(dataId);
-      } else if (/item_*/.test(id)) {
+      } else if (/item_*/.test(td.id)) {
         TodoManager.toggleTodoComplete(dataId);
       } 
     }
@@ -191,7 +191,6 @@ const MainManager = {
 
 const ModalManager = {
   show(todoId) {
-    // console.log("Modal show"); 
     this.currentTodo = todoId ? TodoManager.getTodoById(todoId) : null;
     
     if (this.currentTodo) {
@@ -200,7 +199,7 @@ const ModalManager = {
       this.form.querySelector("#month").value = this.currentTodo.getMonth();
       this.form.querySelector("#year").value = this.currentTodo.getYear();
       this.form.querySelector("#description").value - this.currentTodo.getDescription();
-    }
+    } 
 
     this.container.classList.remove("hide");
     this.container.classList.add("show");
@@ -209,7 +208,7 @@ const ModalManager = {
   hide() {
     this.container.classList.remove("show");
     this.container.classList.add("hide");
-
+    this.form.reset();
     this.currentTodo = null;
   },
 
@@ -224,13 +223,11 @@ const ModalManager = {
         formData.id = this.currentTodo.getId();
         TodoManager.updateTodo(formData);
       } else {
-        MainManager.setShowAll(true);
-        NavManager.setNavSelectGroup("active");
+        NavManager.selectAllTodos();
         TodoManager.createNewTodo(formData);
       }
 
       this.hide();
-      
     } else {
       alert('You must include a title.');
     }
@@ -250,7 +247,6 @@ const ModalManager = {
   markComplete(e) {
     e.preventDefault();
     e.stopPropagation();
-    //console.log("markComplete");
     
     if (this.currentTodo) {
       TodoManager.markTodoComplete(this.currentTodo);
@@ -297,10 +293,6 @@ const TodoManager = {
     }
   },
 
-  getTodoListByIdx(listIdx) {
-    return this.todoLists[listIdx];
-  },
-
   setCurrentList(listIdx) { this.currentList = this.todoLists[listIdx] },
   getCurrentList() { return this.currentList },
 
@@ -308,7 +300,6 @@ const TodoManager = {
     [...data].forEach(todoData => {
       this.addNewTodoData(todoData);
     });
-    console.log("createTodoLists", this.todoLists)
   },
 
   createNewTodo(formData) {
@@ -391,8 +382,8 @@ const TodoManager = {
   constructListTitle(todo) {
     let day = todo.getDay();
     let month = todo.getMonth();
-
     let title = (day && month) ? `${day}/${month}` : "No Due Date"; 
+
     return title;
   }
 };
@@ -436,6 +427,7 @@ const Todo = {
   getId() { return this.id },
   setTodoList(todoList) { this.todoList = todoList },
   getTodoList() { return this.todoList },
+
   setListTitle() { 
     this.listTitle = `${this.title} - ${this.todoList.getTitle()}`; 
   },
@@ -447,7 +439,6 @@ const Todo = {
     this.year = data.year;
     this.completed = data.completed;
     this.description = data.description;
-    
   },
 
   init(data) {
